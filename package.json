@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "SchoolPlus backend server",
-  "main": "server.js",
+  "main": "Server.js",
   "scripts": {
     "start": "node server.js"
   },
