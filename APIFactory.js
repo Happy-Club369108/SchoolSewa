@@ -127,8 +127,4 @@ const authRoutes = (User) => {
   return router;
 };
 
-module.exports = authRoutes;
-
-
-
 module.exports = {crudeRoutes, authRoutes};
