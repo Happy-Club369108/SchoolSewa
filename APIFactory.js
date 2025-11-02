@@ -82,14 +82,14 @@ const authRoutes = (User) => {
 
   // Signup
   router.post('/signup', async (req, res) => {
-    const { number, password, role } = req.body;
+    const { username, number, password, role } = req.body;
     if (!number || !password || !role) return res.status(400).json({ error: 'Missing fields' });
 
     const exist = await User.findOne({ number });
     if (exist) return res.status(400).json({ error: 'User exists' });
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ number, password: hashed, role });
+    const user = await User.create({ username, number, password: hashed, role });
     res.json({ message: 'Signup success', user });
   });
 
