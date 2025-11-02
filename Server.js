@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 const {authRoutes, crudeRoutes } = require('./APIFactory');
 
-app.use('./auth' , authRoutes(User));
+app.use('/auth' , authRoutes(User));
 
 app.use('/users', crudeRoutes(User));
 app.use('/attendance', crudeRoutes(Attendance));
