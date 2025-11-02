@@ -80,35 +80,54 @@ return router;
 const authRoutes = (User) => {
   const router = express.Router();
 
-  // Signup
-  router.post('/signup', async (req, res) => {
-    const { username, number, password, role } = req.body;
-    if (!number || !password || !role) return res.status(400).json({ error: 'Missing fields' });
+  router.post("/signup", async (req, res) => {
+    try {
+      const { username, number, password, role } = req.body;
+      if (!number || !password || !role)
+        return res.status(400).json({ error: "Missing fields" });
 
-    const exist = await User.findOne({ number });
-    if (exist) return res.status(400).json({ error: 'User exists' });
+      const exist = await User.findOne({ number });
+      if (exist) return res.status(400).json({ error: "User already exists" });
 
-    const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ username, number, password: hashed, role });
-    res.json({ message: 'Signup success', user });
+      const hashed = await bcrypt.hash(password, 10);
+      const user = await User.create({ username, number, password: hashed, role });
+
+      res.json({
+        message: "Signup success",
+        userID: user._id,
+        role: user.role,
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
+    
+  router.post("/login", async (req, res) => {
+    try {
+      const { number, password, role } = req.body;
+      if (!number || !password || !role)
+        return res.status(400).json({ error: "Missing fields" });
 
-  // Login
-  router.post('/login', async (req, res) => {
-    const { number, password, role } = req.body;
-    if (!number || !password || !role) return res.status(400).json({ error: 'Missing fields' });
+      const user = await User.findOne({ number, role });
+      if (!user) return res.status(404).json({ error: "User not found" });
 
-    const user = await User.findOne({ number, role });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+      const ok = await bcrypt.compare(password, user.password);
+      if (!ok) return res.status(401).json({ error: "Wrong password" });
 
-    const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(401).json({ error: 'Wrong password' });
-
-    res.json({ message: 'Login success', user });
+      res.json({
+        message: "Login success",
+        userID: user._id,
+        role: user.role,
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   return router;
 };
+
+module.exports = authRoutes;
 
 
 
